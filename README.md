@@ -28,7 +28,9 @@ Each affix is rolled in two steps: a **rarity tier** by weight, then a random op
 
 Values scale with the monster's level (switchable), every option has a ceiling, and a **value multiplier** setting scales them all. With **One affix per stat** on (the default) an item never gets, for example, both MaxHP and MaxHP %.
 
-**Ground drop mode** (off by default): instead of going into your inventory identified, the item drops on the ground next to you, **unidentified, with a pillar of light** like a card drop. The pillar is blue for 1 affix, yellow for 2, purple for 3-4. Identify it after picking it up to see the affixes. (If dropped items don't show up in your client, turn the pillar off.)
+**Ground drop mode** (off by default): instead of going into your inventory identified, the item drops on the ground **where the monster died**, **unidentified**. Identify it after picking it up to see the affixes.
+
+**Pillar of light** (a separate option, only used with ground drop mode): the drop gets a colored pillar like a card drop: blue for 1 affix, yellow for 2, purple for 3-4. With ground drop off there is never a pillar. If dropped items don't show up in your client, turn the pillar off.
 
 **Autoloot:** in ground drop mode, if your `@autoloot` would have picked up the stock drop (its rate is within your autoloot rate and its type is allowed, or it is on your `@autolootitem` list), the affixed item goes straight into your inventory, still unidentified, instead of onto the ground.
 
@@ -66,8 +68,8 @@ Example: `7321:5,same:2`. *Plain* means not equipped, no refine, no cards or enc
 | Minimum / maximum affixes per item | 1 / 4 |
 | Scale values with monster level | on |
 | One affix per stat | on |
-| Drop on the ground (unidentified, with a pillar) | off |
-| Ground drop: show the pillar of light | on |
+| Drop on the ground, unidentified | off |
+| Ground drop: show the pillar of light (only with the option above) | on |
 | Rarity weight, tiers 1 / 2 / 3 / 4 | 55 / 28 / 14 / 3 |
 | Value multiplier (%) | 100 |
 | Move all affixes: price / materials | 100000 / none |
@@ -93,6 +95,10 @@ Press **Apply** after changing settings; the server restarts.
 
 They are different designs, not drop-in replacements, and I have not tested running both together. If you do, expect two sets of random-option gear in your inventory and two separate crafting systems.
 
+## Option list and balancing
+
+[OPTIONS.md](OPTIONS.md) lists all 214 options with their tier, base range, final range at monster level 1 and 100, cap and exclusion group, plus notes on how to balance rarity, values and the number of affixes.
+
 ## Editing the option pool
 
 Open `npc/affix_drops.txt`. Every option is one row in `OnInit`:
@@ -102,6 +108,21 @@ callsub L_Add, <option id>, <tier 1-4>, <min>, <max>, <kind>, <item type>, <cap>
 ```
 
 Change a row's tier, range or cap, delete a row to remove an option, or copy one to add any option from rAthena's `item_randomopt_db.yml`. The column meanings are in the comment above the rows. The Smith's reroll reads the same pool, so one edit covers both. Names shown in game come from `data/luafiles514/lua files/datainfo/addrandomoptionnametable.lub`, which already names every option id.
+
+## Code-only switches
+
+Two flags at the top of `OnInit` in `npc/affix_drops.txt` (not in the settings menu): `.showmsg = 1` shows the "dropped with N attributes" chat messages (off by default), and `.debug = 1` writes ground drop details to the server log.
+
+## Changelog
+
+**1.1.0**
+- Ground drops now appear where the monster died instead of at the player's feet.
+- The pillar of light is its own option and only applies with ground drop on.
+- The "dropped with N attributes" chat messages are off by default (flag in the script).
+- Added [OPTIONS.md](OPTIONS.md), the full option table with balancing notes.
+
+**1.0.0**
+- First release.
 
 ## Known limits
 

@@ -18,6 +18,9 @@ OnInit:
 	.scaling = callfunc("F_ModSetting", "affix-forge", "level_scaling", 1);
 	.ground  = callfunc("F_ModSetting", "affix-forge", "ground_drop", 0);
 	.pillar  = callfunc("F_ModSetting", "affix-forge", "ground_pillar", 1);
+	if (!.ground) .pillar = 0; // the pillar only exists with ground drops
+	.showmsg = 0; // 1 = show the "dropped with X attributes" chat messages
+	.debug   = 0; // 1 = write the ground drop debugmes line to the server log
 	.vm      = callfunc("F_ModSetting", "affix-forge", "value_mult", 100);
 	.uniq    = callfunc("F_ModSetting", "affix-forge", "unique_stats", 1);
 	.w1      = callfunc("F_ModSetting", "affix-forge", "weight_common", 55);
@@ -290,6 +293,7 @@ L_Add:
 	return;
 
 OnNPCKillEvent:
+	if (.debug) debugmes "affix-forge: kill event mob " + killedrid + " gid " + killedgid + " mult " + .mult + " ground " + .ground;
 	if (.mult < 1) end;
 	// getmobdrops fills $@MobDrop_item[] / $@MobDrop_rate[] and returns the
 	// drop count, or 0 for an unknown monster.
@@ -301,6 +305,29 @@ OnNPCKillEvent:
 	}
 
 	.@lv = getmonsterinfo(killedrid, MOB_LV);
+
+	// Where the monster died. getmapxy cannot look up monsters, so read them with
+	// getunitdata (killedgid = the dead monster's unit id; UMOB_X / UMOB_Y are the
+	// monster fields this server uses). Start from the player's position and only
+	// take the monster's if it is a real spot near the player, so a failed lookup
+	// falls back to the player.
+	getmapxy(.@map$, .@x, .@y, BL_PC);
+	if (.debug) debugmes "affix-forge: player at " + .@map$ + " " + .@x + "," + .@y + ", reading monster position";
+	getunitdata(killedgid, .@mob);
+	if (.debug) debugmes "affix-forge: monster at " + .@mob[UMOB_X] + "," + .@mob[UMOB_Y];
+	.@mx = .@mob[UMOB_X];
+	.@my = .@mob[UMOB_Y];
+	.@dx = .@mx - .@x;
+	.@dy = .@my - .@y;
+	if (.@dx < 0) .@dx = -.@dx;
+	if (.@dy < 0) .@dy = -.@dy;
+	if (.@mx > 0 && .@my > 0 && .@dx <= 30 && .@dy <= 30) {
+		.@x = .@mx;
+		.@y = .@my;
+	} else if (.debug) {
+		debugmes "affix-forge: could not read the monster position, using the player position";
+	}
+
 	.@flat = 100;
 	.@pct  = 100;
 	if (.scaling) {
@@ -380,14 +407,13 @@ OnNPCKillEvent:
 		}
 
 		if (.ground && !.@auto) {
-			// Drop it next to the player, unidentified. The last argument asks for
+			// Drop it on the ground, unidentified. The last argument asks for
 			// the pillar of light (setting ground_pillar); the server picks its color from the option count
 			// (battle conf rndopt_drop_pillar, on by default): blue 1, yellow 2,
 			// purple 3 or more.
-			getmapxy(.@map$, .@x, .@y, BL_PC);
 			makeitem3 .@id, 1, .@map$, .@x, .@y, 0, 0, 0, 0, 0, 0, 0, .@oid, .@oval, .@opar, .pillar;
-			debugmes "affix-forge: ground drop item " + .@id + " on " + .@map$ + " " + .@x + "," + .@y + " options " + .@oid[0] + "/" + .@oid[1] + "/" + .@oid[2] + "/" + .@oid[3];
-			dispbottom "A " + getitemname(.@id) + " dropped with " + .@k + " hidden attribute" + (.@k > 1 ? "s" : "") + "!", 0x00FF88;
+			if (.debug) debugmes "affix-forge: ground drop item " + .@id + " on " + .@map$ + " " + .@x + "," + .@y + " options " + .@oid[0] + "/" + .@oid[1] + "/" + .@oid[2] + "/" + .@oid[3];
+			if (.showmsg) dispbottom "A " + getitemname(.@id) + " dropped with " + .@k + " hidden attribute" + (.@k > 1 ? "s" : "") + "!", 0x00FF88;
 			continue;
 		}
 
@@ -397,7 +423,7 @@ OnNPCKillEvent:
 		}
 		// Ground drop mode (autoloot): stays unidentified like a ground drop.
 		getitem3 .@id, 1, (.ground ? 0 : 1), 0, 0, 0, 0, 0, 0, .@oid, .@oval, .@opar;
-		dispbottom "A " + getitemname(.@id) + " dropped with " + .@k + (.ground ? " hidden" : " bonus") + " attribute" + (.@k > 1 ? "s" : "") + "!", 0x00FF88;
+		if (.showmsg) dispbottom "A " + getitemname(.@id) + " dropped with " + .@k + (.ground ? " hidden" : " bonus") + " attribute" + (.@k > 1 ? "s" : "") + "!", 0x00FF88;
 	}
 	end;
 }

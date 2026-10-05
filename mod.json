@@ -1,6 +1,6 @@
 {
   "name": "affix-forge",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "rhwski",
   "description": "Monsters drop equipment with 1-4 random affixes from a pool of 214 options in four rarity tiers, and the Affix Smith in Prontera moves, removes and rerolls affixes for a price you set.",
   "requires": {
@@ -53,15 +53,15 @@
       "key": "ground_drop",
       "type": "boolean",
       "default": false,
-      "label": "Drop on the ground, unidentified, with a pillar of light",
-      "description": "Off: the modded item goes straight into your inventory, identified. On: it drops on the ground next to you, unidentified, with a colored pillar like a card drop (blue = 1 attribute, yellow = 2, purple = 3-4). Pick it up and identify it to see the attributes."
+      "label": "Drop on the ground, unidentified",
+      "description": "Off: the modded item goes straight into your inventory, identified. On: it drops on the ground next to you, unidentified. Pick it up and identify it to see the attributes. The pillar of light is a separate option below."
     },
     {
       "key": "ground_pillar",
       "type": "boolean",
       "default": true,
       "label": "Ground drop: show the pillar of light",
-      "description": "Only used with the ground drop setting. If dropped items do not appear in the game, turn this off: some clients cannot draw the colored pillar and skip the item."
+      "description": "Only applies when 'Drop on the ground, unidentified' is on; with that off there is never a pillar. On: the drop gets a colored pillar like a card drop (blue = 1 attribute, yellow = 2, purple = 3-4). If dropped items do not appear in the game, turn this off: some clients cannot draw the colored pillar and skip the item."
     },
     {
       "key": "weight_common",
