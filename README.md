@@ -109,11 +109,20 @@ callsub L_Add, <option id>, <tier 1-4>, <min>, <max>, <kind>, <item type>, <cap>
 
 Change a row's tier, range or cap, delete a row to remove an option, or copy one to add any option from rAthena's `item_randomopt_db.yml`. The column meanings are in the comment above the rows. The Smith's reroll reads the same pool, so one edit covers both. Names shown in game come from `data/luafiles514/lua files/datainfo/addrandomoptionnametable.lub`, which already names every option id.
 
+## Affixes in pre-renewal
+
+In pre-renewal the server ships **no scripts for random options** (its option list only imports the renewal file), so an affix is shown on the item but does **nothing for your stats**. `pre-renewal/db/item_randomopt_db.yml` gives the 214 options Affix Forge uses their scripts (copied unchanged from rAthena's renewal list, classic bonuses only), so the affixes count in pre-renewal on every equipped piece, **costumes included**, as they already do in renewal.
+
+There is no settings switch for this (a mod can declare at most 20 settings and Affix Forge uses all of them). To turn it off, delete `pre-renewal/db/item_randomopt_db.yml` from the installed mod folder and restart the server. If you add options of your own to the pool (see below), add their rows to that file too, copied from rAthena's `db/re/item_randomopt_db.yml`.
+
 ## Code-only switches
 
 Two flags at the top of `OnInit` in `npc/affix_drops.txt` (not in the settings menu): `.showmsg = 1` shows the "dropped with N attributes" chat messages (off by default), and `.debug = 1` writes ground drop details to the server log.
 
 ## Changelog
+
+**1.2.0**
+- Pre-renewal: the 214 options now have their stat scripts, so affixes count towards your stats there (items and costumes). Before, the server had no option scripts in pre-renewal and affixes did nothing.
 
 **1.1.0**
 - Ground drops now appear where the monster died instead of at the player's feet.

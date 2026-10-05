@@ -1,12 +1,13 @@
 {
   "name": "affix-forge",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "rhwski",
   "description": "Monsters drop equipment with 1-4 random affixes from a pool of 214 options in four rarity tiers, and the Affix Smith in Prontera moves, removes and rerolls affixes for a price you set.",
   "requires": {
     "app": ">=1.4.3",
     "era": "any"
   },
+  "prerenewalFolder": "pre-renewal",
   "settings": [
     {
       "key": "drop_mult",
